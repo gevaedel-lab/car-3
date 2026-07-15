@@ -1,15 +1,25 @@
 def moveright(spd: number):
-    mecanumRobotV2.motor(LR.UPPER_LEFT, MD.FORWARD, spd)
-    mecanumRobotV2.motor(LR.LOWER_LEFT, MD.BACK, spd)
-    mecanumRobotV2.motor(LR.UPPER_RIGHT, MD.BACK, spd)
-    mecanumRobotV2.motor(LR.LOWER_RIGHT, MD.FORWARD, spd)
+    mecanumRobotV2.set_servo(0)
+    if mecanumRobotV2.ultra() < SaftyDistance:
+        mecanumRobotV2.state()
+    else:
+        mecanumRobotV2.motor(LR.UPPER_LEFT, MD.FORWARD, spd)
+        mecanumRobotV2.motor(LR.LOWER_LEFT, MD.BACK, spd)
+        mecanumRobotV2.motor(LR.UPPER_RIGHT, MD.BACK, spd)
+        mecanumRobotV2.motor(LR.LOWER_RIGHT, MD.FORWARD, spd)
+        mecanumRobotV2.set_led(LedCount.LEFT, LedState.ON)
+        mecanumRobotV2.set_led(LedCount.RIGHT, LedState.ON)
 def Forward(spd3: number):
-    mecanumRobotV2.motor(LR.UPPER_LEFT, MD.FORWARD, spd3)
-    mecanumRobotV2.motor(LR.LOWER_LEFT, MD.FORWARD, spd3)
-    mecanumRobotV2.motor(LR.UPPER_RIGHT, MD.FORWARD, spd3)
-    mecanumRobotV2.motor(LR.LOWER_RIGHT, MD.FORWARD, spd3)
-    mecanumRobotV2.set_led(LedCount.LEFT, LedState.ON)
-    mecanumRobotV2.set_led(LedCount.RIGHT, LedState.ON)
+    mecanumRobotV2.set_servo(80)
+    if mecanumRobotV2.ultra() < SaftyDistance:
+        mecanumRobotV2.state()
+    else:
+        mecanumRobotV2.motor(LR.UPPER_LEFT, MD.FORWARD, spd3)
+        mecanumRobotV2.motor(LR.LOWER_LEFT, MD.FORWARD, spd3)
+        mecanumRobotV2.motor(LR.UPPER_RIGHT, MD.FORWARD, spd3)
+        mecanumRobotV2.motor(LR.LOWER_RIGHT, MD.FORWARD, spd3)
+        mecanumRobotV2.set_led(LedCount.LEFT, LedState.ON)
+        mecanumRobotV2.set_led(LedCount.RIGHT, LedState.ON)
 def Turn_right(spd4: number):
     mecanumRobotV2.motor(LR.UPPER_LEFT, MD.FORWARD, spd4)
     mecanumRobotV2.motor(LR.LOWER_LEFT, MD.FORWARD, spd4)
@@ -35,10 +45,16 @@ def backwards(spd5: number):
     mecanumRobotV2.motor(LR.UPPER_RIGHT, MD.BACK, spd5)
     mecanumRobotV2.motor(LR.LOWER_RIGHT, MD.BACK, spd5)
 def moveLeft(spd6: number):
-    mecanumRobotV2.motor(LR.UPPER_LEFT, MD.BACK, spd6)
-    mecanumRobotV2.motor(LR.LOWER_LEFT, MD.FORWARD, spd6)
-    mecanumRobotV2.motor(LR.UPPER_RIGHT, MD.FORWARD, spd6)
-    mecanumRobotV2.motor(LR.LOWER_RIGHT, MD.BACK, spd6)
+    mecanumRobotV2.set_servo(170)
+    if mecanumRobotV2.ultra() < SaftyDistance:
+        mecanumRobotV2.state()
+    else:
+        mecanumRobotV2.motor(LR.UPPER_LEFT, MD.BACK, spd6)
+        mecanumRobotV2.motor(LR.LOWER_LEFT, MD.FORWARD, spd6)
+        mecanumRobotV2.motor(LR.UPPER_RIGHT, MD.FORWARD, spd6)
+        mecanumRobotV2.motor(LR.LOWER_RIGHT, MD.BACK, spd6)
+        mecanumRobotV2.set_led(LedCount.LEFT, LedState.ON)
+        mecanumRobotV2.set_led(LedCount.RIGHT, LedState.ON)
 def setspeed(spd7: number):
     global Speed, TurnSpeed
     Speed = spd7
@@ -47,22 +63,22 @@ def setspeed(spd7: number):
         TurnSpeed = 20
     basic.show_number(spd7)
 IRVal = 0
-BeepOn = False
-LastBeepTime = 0
 TurnSpeed = 0
 Speed = 0
+BeepOn = False
+LastBeepTime = 0
+SaftyDistance = 0
 serial.redirect_to_usb()
 irRemote.connect_infrared(DigitalPin.P0)
-Speed = 0
+setspeed(20)
 Time = 1000
-TurnSpeed = Speed / 3
-
+SaftyDistance = 50
 
 def on_forever():
     global IRVal, BeepOn
     IRVal = irRemote.return_ir_button()
     mecanumRobotV2.state()
-    serial.write_line("" + str(IRVal))
+    serial.write_line("btn" + str(IRVal) + "     " + "X" + str(input.acceleration(Dimension.X)) + "     " + "Y" + str(input.acceleration(Dimension.Y)) + "     " + "Z" + str(input.acceleration(Dimension.Z)) + "     " + "North finder" + str(input.compass_heading()))
     if IRVal == 70:
         Forward(Speed)
     elif IRVal == 67:
@@ -94,5 +110,5 @@ def on_forever():
         setspeed(100)
     elif IRVal == 82:
         setspeed(0)
-    basic.pause(30)
+    basic.pause(1000)
 basic.forever(on_forever)

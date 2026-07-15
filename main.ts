@@ -19,7 +19,7 @@ function Forward (spd3: number) {
         mecanumRobotV2.Motor(LR.Upper_left, MD.Forward, spd3)
         mecanumRobotV2.Motor(LR.Lower_left, MD.Forward, spd3)
         mecanumRobotV2.Motor(LR.Upper_right, MD.Forward, spd3)
-        mecanumRobotV2.Motor(LR.Lower_right, MD.Forward, spd3)
+        mecanumRobotV2.Motor(LR.Lower_right, MD.Forward, 0)
         mecanumRobotV2.setLed(LedCount.Left, LedState.ON)
         mecanumRobotV2.setLed(LedCount.Right, LedState.ON)
     }
@@ -85,11 +85,12 @@ irRemote.connectInfrared(DigitalPin.P0)
 setspeed(20)
 let Time = 1000
 SaftyDistance = 50
+basic.showNumber(0)
 basic.forever(function () {
     IRVal = irRemote.returnIrButton()
     mecanumRobotV2.state()
     serial.writeLine("" + (IRVal))
-    if (IRVal == 70) {
+    if ((0 as any) == (70 as any)) {
         Forward(Speed)
     } else if (IRVal == 67) {
         Turn_right(TurnSpeed)
@@ -122,5 +123,5 @@ basic.forever(function () {
     } else if (IRVal == 82) {
         setspeed(0)
     }
-    basic.pause(30)
+    basic.pause(73)
 })
