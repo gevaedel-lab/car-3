@@ -58,11 +58,11 @@ function setspeed (spd7: number) {
 let IRVal = 0
 let BeepOn = false
 let LastBeepTime = 0
-let TurnSpeed = 0
 let Speed = 0
+let TurnSpeed = 0
 serial.redirectToUSB()
 irRemote.connectInfrared(DigitalPin.P0)
-Speed = 0
+setspeed(20)
 let Time = 1000
 TurnSpeed = Speed / 3
 basic.forever(function () {
