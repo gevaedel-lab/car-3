@@ -1,16 +1,28 @@
 function moveright (spd: number) {
-    mecanumRobotV2.Motor(LR.Upper_left, MD.Forward, spd)
-    mecanumRobotV2.Motor(LR.Lower_left, MD.Back, spd)
-    mecanumRobotV2.Motor(LR.Upper_right, MD.Back, spd)
-    mecanumRobotV2.Motor(LR.Lower_right, MD.Forward, spd)
+    mecanumRobotV2.setServo(0)
+    if (mecanumRobotV2.ultra() < SaftyDistance) {
+        mecanumRobotV2.state()
+    } else {
+        mecanumRobotV2.Motor(LR.Upper_left, MD.Forward, spd)
+        mecanumRobotV2.Motor(LR.Lower_left, MD.Back, spd)
+        mecanumRobotV2.Motor(LR.Upper_right, MD.Back, spd)
+        mecanumRobotV2.Motor(LR.Lower_right, MD.Forward, spd)
+        mecanumRobotV2.setLed(LedCount.Left, LedState.ON)
+        mecanumRobotV2.setLed(LedCount.Right, LedState.ON)
+    }
 }
 function Forward (spd3: number) {
-    mecanumRobotV2.Motor(LR.Upper_left, MD.Forward, spd3)
-    mecanumRobotV2.Motor(LR.Lower_left, MD.Forward, spd3)
-    mecanumRobotV2.Motor(LR.Upper_right, MD.Forward, spd3)
-    mecanumRobotV2.Motor(LR.Lower_right, MD.Forward, spd3)
-    mecanumRobotV2.setLed(LedCount.Left, LedState.ON)
-    mecanumRobotV2.setLed(LedCount.Right, LedState.ON)
+    mecanumRobotV2.setServo(80)
+    if (mecanumRobotV2.ultra() < SaftyDistance) {
+        mecanumRobotV2.state()
+    } else {
+        mecanumRobotV2.Motor(LR.Upper_left, MD.Forward, spd3)
+        mecanumRobotV2.Motor(LR.Lower_left, MD.Forward, spd3)
+        mecanumRobotV2.Motor(LR.Upper_right, MD.Forward, spd3)
+        mecanumRobotV2.Motor(LR.Lower_right, MD.Forward, spd3)
+        mecanumRobotV2.setLed(LedCount.Left, LedState.ON)
+        mecanumRobotV2.setLed(LedCount.Right, LedState.ON)
+    }
 }
 function Turn_right (spd4: number) {
     mecanumRobotV2.Motor(LR.Upper_left, MD.Forward, spd4)
@@ -42,10 +54,17 @@ function backwards (spd5: number) {
     mecanumRobotV2.Motor(LR.Lower_right, MD.Back, spd5)
 }
 function moveLeft (spd6: number) {
-    mecanumRobotV2.Motor(LR.Upper_left, MD.Back, spd6)
-    mecanumRobotV2.Motor(LR.Lower_left, MD.Forward, spd6)
-    mecanumRobotV2.Motor(LR.Upper_right, MD.Forward, spd6)
-    mecanumRobotV2.Motor(LR.Lower_right, MD.Back, spd6)
+    mecanumRobotV2.setServo(170)
+    if (mecanumRobotV2.ultra() < SaftyDistance) {
+        mecanumRobotV2.state()
+    } else {
+        mecanumRobotV2.Motor(LR.Upper_left, MD.Back, spd6)
+        mecanumRobotV2.Motor(LR.Lower_left, MD.Forward, spd6)
+        mecanumRobotV2.Motor(LR.Upper_right, MD.Forward, spd6)
+        mecanumRobotV2.Motor(LR.Lower_right, MD.Back, spd6)
+        mecanumRobotV2.setLed(LedCount.Left, LedState.ON)
+        mecanumRobotV2.setLed(LedCount.Right, LedState.ON)
+    }
 }
 function setspeed (spd7: number) {
     Speed = spd7
@@ -56,19 +75,20 @@ function setspeed (spd7: number) {
     basic.showNumber(spd7)
 }
 let IRVal = 0
+let TurnSpeed = 0
+let Speed = 0
 let BeepOn = false
 let LastBeepTime = 0
-let Speed = 0
-let TurnSpeed = 0
+let SaftyDistance = 0
 serial.redirectToUSB()
 irRemote.connectInfrared(DigitalPin.P0)
 setspeed(20)
 let Time = 1000
-TurnSpeed = Speed / 3
+SaftyDistance = 50
 basic.forever(function () {
     IRVal = irRemote.returnIrButton()
     mecanumRobotV2.state()
-    serial.writeLine("" + IRVal)
+    serial.writeLine("" + (IRVal))
     if (IRVal == 70) {
         Forward(Speed)
     } else if (IRVal == 67) {
