@@ -1,57 +1,63 @@
-function moveright(spd: number) {
+function moveright (spd: number) {
     mecanumRobotV2.Motor(LR.Upper_left, MD.Forward, spd)
     mecanumRobotV2.Motor(LR.Lower_left, MD.Back, spd)
     mecanumRobotV2.Motor(LR.Upper_right, MD.Back, spd)
     mecanumRobotV2.Motor(LR.Lower_right, MD.Forward, spd)
 }
-
-function Turn_left(spd2: number) {
-    mecanumRobotV2.Motor(LR.Upper_left, MD.Back, spd2)
-    mecanumRobotV2.Motor(LR.Lower_left, MD.Back, spd2)
-    mecanumRobotV2.Motor(LR.Upper_right, MD.Forward, spd2)
-    mecanumRobotV2.Motor(LR.Lower_right, MD.Forward, spd2)
-}
-
-function Forward(spd3: number) {
+function Forward (spd3: number) {
     mecanumRobotV2.Motor(LR.Upper_left, MD.Forward, spd3)
     mecanumRobotV2.Motor(LR.Lower_left, MD.Forward, spd3)
     mecanumRobotV2.Motor(LR.Upper_right, MD.Forward, spd3)
     mecanumRobotV2.Motor(LR.Lower_right, MD.Forward, spd3)
+    mecanumRobotV2.setLed(LedCount.Left, LedState.ON)
+    mecanumRobotV2.setLed(LedCount.Right, LedState.ON)
 }
-
-function Turn_right(spd4: number) {
+function Turn_right (spd4: number) {
     mecanumRobotV2.Motor(LR.Upper_left, MD.Forward, spd4)
     mecanumRobotV2.Motor(LR.Lower_left, MD.Forward, spd4)
     mecanumRobotV2.Motor(LR.Upper_right, MD.Back, spd4)
     mecanumRobotV2.Motor(LR.Lower_right, MD.Back, spd4)
 }
-
-function backwards(spd5: number) {
+function Turn_left (spd2: number) {
+    mecanumRobotV2.Motor(LR.Upper_left, MD.Back, spd2)
+    mecanumRobotV2.Motor(LR.Lower_left, MD.Back, spd2)
+    mecanumRobotV2.Motor(LR.Upper_right, MD.Forward, spd2)
+    mecanumRobotV2.Motor(LR.Lower_right, MD.Forward, spd2)
+}
+function reverse_beep () {
+    if (input.runningTime() - LastBeepTime >= 300) {
+        LastBeepTime = input.runningTime()
+        BeepOn = !(BeepOn)
+        if (BeepOn) {
+            music.ringTone(700)
+        } else {
+            music.stopAllSounds()
+        }
+    }
+}
+function backwards (spd5: number) {
     mecanumRobotV2.Motor(LR.Upper_left, MD.Back, spd5)
     mecanumRobotV2.Motor(LR.Lower_left, MD.Back, spd5)
     mecanumRobotV2.Motor(LR.Upper_right, MD.Back, spd5)
     mecanumRobotV2.Motor(LR.Lower_right, MD.Back, spd5)
 }
-
-function moveLeft(spd6: number) {
+function moveLeft (spd6: number) {
     mecanumRobotV2.Motor(LR.Upper_left, MD.Back, spd6)
     mecanumRobotV2.Motor(LR.Lower_left, MD.Forward, spd6)
     mecanumRobotV2.Motor(LR.Upper_right, MD.Forward, spd6)
     mecanumRobotV2.Motor(LR.Lower_right, MD.Back, spd6)
 }
-
-function setspeed(spd7: number) {
-    
+function setspeed (spd7: number) {
     Speed = spd7
     TurnSpeed = spd7 / 3
     if (TurnSpeed < 20) {
         TurnSpeed = 20
     }
-    
     basic.showNumber(spd7)
 }
-
 let IRVal = 0
+let BeepOn = false
+let LastBeepTime = 0
 let TurnSpeed = 0
 let Speed = 0
 serial.redirectToUSB()
@@ -59,11 +65,10 @@ irRemote.connectInfrared(DigitalPin.P0)
 Speed = 0
 let Time = 1000
 TurnSpeed = Speed / 3
-basic.forever(function on_forever() {
-    
+basic.forever(function () {
     IRVal = irRemote.returnIrButton()
     mecanumRobotV2.state()
-    serial.writeLine("" + ("" + IRVal))
+    serial.writeLine("" + IRVal)
     if (IRVal == 70) {
         Forward(Speed)
     } else if (IRVal == 67) {
@@ -72,15 +77,18 @@ basic.forever(function on_forever() {
         Turn_left(TurnSpeed)
     } else if (IRVal == 21) {
         backwards(Speed)
-        music.play(music.stringPlayable("A - A - A - A - ", 123), music.PlaybackMode.InBackground)
+        reverse_beep()
     } else if (IRVal == 74) {
         moveright(Speed)
     } else if (IRVal == 66) {
         moveLeft(Speed)
     } else {
         mecanumRobotV2.state()
+        mecanumRobotV2.setLed(LedCount.Left, LedState.OFF)
+        mecanumRobotV2.setLed(LedCount.Right, LedState.OFF)
+        music.stopAllSounds()
+        BeepOn = false
     }
-    
     if (IRVal == 22) {
         setspeed(20)
     } else if (IRVal == 25) {
@@ -94,6 +102,5 @@ basic.forever(function on_forever() {
     } else if (IRVal == 82) {
         setspeed(0)
     }
-    
     basic.pause(30)
 })
